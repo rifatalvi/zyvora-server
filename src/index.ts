@@ -30,8 +30,11 @@ app.get('/api/health', (_req, res) => {
   res.status(200).json({ success: true, message: 'Zyvora API is running 🚀' });
 });
 
+import aiRoutes from './routes/aiRoutes';
+
 // ── Routes ─────────────────────────────────────────────────────
 app.use('/api/items', itemRoutes);
+app.use('/api/ai', aiRoutes);
 
 // ── Error Handler (must be last) ──────────────────────────────
 app.use(errorHandler);
