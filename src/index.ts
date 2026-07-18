@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import connectDB from './config/db';
 import authRoutes from './routes/authRoutes';
+import itemRoutes from './routes/itemRoutes';
 import errorHandler from './middleware/errorHandler';
 
 const app = express();
@@ -26,6 +27,7 @@ app.get('/api/health', (_req, res) => {
 
 // ── Routes ─────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
+app.use('/api/items', itemRoutes);
 
 // ── Error Handler (must be last) ──────────────────────────────
 app.use(errorHandler);
