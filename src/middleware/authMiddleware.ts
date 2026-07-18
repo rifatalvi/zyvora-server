@@ -1,12 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken } from '../utils/auth';
-import User from '../models/User';
+import { auth } from '../config/auth';
+import { fromNodeHeaders } from 'better-auth/node';
 
 export interface AuthRequest extends Request {
   user?: {
     id: string;
     email: string;
+    name: string;
     role: string;
+    avatar?: string;
   };
 }
 
@@ -16,27 +18,25 @@ export const protect = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const authHeader = req.headers.authorization;
+    const session = await auth.api.getSession({
+      headers: fromNodeHeaders(req.headers),
+    });
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      res.status(401).json({ success: false, message: 'No token provided, unauthorized' });
+    if (!session || !session.user) {
+      res.status(401).json({ success: false, message: 'Unauthorized' });
       return;
     }
 
-    const token = authHeader.split(' ')[1];
-    const decoded = verifyToken(token);
-
-    // Verify user still exists
-    const userExists = await User.findById(decoded.id).select('_id email role');
-    if (!userExists) {
-      res.status(401).json({ success: false, message: 'User no longer exists' });
-      return;
-    }
-
-    req.user = { id: decoded.id, email: decoded.email, role: decoded.role };
+    req.user = {
+      id: session.user.id,
+      email: session.user.email,
+      name: session.user.name,
+      role: (session.user as any).role || 'learner',
+      avatar: (session.user as any).avatar || '',
+    };
     next();
   } catch (error) {
-    res.status(401).json({ success: false, message: 'Invalid or expired token' });
+    res.status(401).json({ success: false, message: 'Invalid session' });
   }
 };
 
