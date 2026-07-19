@@ -42,8 +42,10 @@ app.use('/api/bookings', bookingRoutes);
 app.use(errorHandler);
 
 // ── Start Server ───────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`🚀 Zyvora server running on http://localhost:${PORT}`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Zyvora server running on http://localhost:${PORT}`);
+  });
+}
 
 export default app;
