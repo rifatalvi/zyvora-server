@@ -5,6 +5,8 @@ import connectDB from './config/db';
 import { toNodeHandler } from 'better-auth/node';
 import { auth } from './config/auth';
 import itemRoutes from './routes/itemRoutes';
+import aiRoutes from './routes/aiRoutes';
+import bookingRoutes from './routes/bookingRoutes';
 import errorHandler from './middleware/errorHandler';
 import './models/User'; // Ensure User model is registered
 
@@ -31,11 +33,10 @@ app.get('/api/health', (_req, res) => {
   res.status(200).json({ success: true, message: 'Zyvora API is running 🚀' });
 });
 
-import aiRoutes from './routes/aiRoutes';
-
 // ── Routes ─────────────────────────────────────────────────────
 app.use('/api/items', itemRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 // ── Error Handler (must be last) ──────────────────────────────
 app.use(errorHandler);
