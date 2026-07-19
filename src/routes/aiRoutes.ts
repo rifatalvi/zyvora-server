@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { generateContent, getRecommendations, chatWithJarvis } from '../controllers/aiController';
-import { protect } from '../middleware/authMiddleware';
+import { generateContent, getRecommendations, chatWithJarvis } from '../controllers/aiController.js';
+import { protect } from '../middleware/authMiddleware.js';
 
 const router = Router();
 

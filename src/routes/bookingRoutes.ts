@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { createBooking, verifyBookingSuccess, getMyBookings, getProviderSales } from '../controllers/bookingController';
+import { createBooking, verifyBookingSuccess, getMyBookings, getProviderSales } from '../controllers/bookingController.js';
 
 const router = Router();
 

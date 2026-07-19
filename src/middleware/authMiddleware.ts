@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { auth } from '../config/auth';
+import { auth } from '../config/auth.js';
 import { fromNodeHeaders } from 'better-auth/node';
 
 export interface AuthRequest extends Request {

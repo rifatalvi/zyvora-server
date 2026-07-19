@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Booking from '../models/Booking';
+import Booking from '../models/Booking.js';
 
 // Inline type to avoid circular dependency with authMiddleware
 interface AuthRequest extends Request {

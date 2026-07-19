@@ -9,7 +9,7 @@
 import 'dotenv/config';
 import mongoose from 'mongoose';
 import { MongoClient, ObjectId } from 'mongodb';
-import Item from '../models/Item';
+import Item from '../models/Item.js';
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
 

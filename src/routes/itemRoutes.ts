@@ -7,8 +7,8 @@ import {
   getMyItems,
   addReview,
 } from '../controllers/itemController';
-import { protect } from '../middleware/authMiddleware';
-import { attachUser } from '../middleware/attachUser';
+import { protect } from '../middleware/authMiddleware.js';
+import { attachUser } from '../middleware/attachUser.js';
 
 const router = Router();
 

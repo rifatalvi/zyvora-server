@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { GoogleGenAI } from '@google/genai';
-import { AuthRequest } from '../middleware/authMiddleware';
-import Item from '../models/Item';
+import { AuthRequest } from '../middleware/authMiddleware.js';
+import Item from '../models/Item.js';
 
 // Initialize the Gemini SDK
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });

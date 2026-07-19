@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import Item from '../models/Item';
-import { AuthRequest } from '../middleware/authMiddleware';
+import Item from '../models/Item.js';
+import { AuthRequest } from '../middleware/authMiddleware.js';
 
 // ── POST /api/items — Create Item (Protected) ──────────────────
 export const createItem = async (req: AuthRequest, res: Response): Promise<void> => {

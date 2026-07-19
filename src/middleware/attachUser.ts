@@ -1,5 +1,5 @@
 import { Response, NextFunction } from 'express';
-import { AuthRequest } from './authMiddleware';
+import { AuthRequest } from './authMiddleware.js';
 
 // The protect middleware already retrieves the user via better-auth
 // We can just alias properties for backward compatibility with existing routes if needed

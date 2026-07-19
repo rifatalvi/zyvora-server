@@ -1,14 +1,14 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import connectDB from './config/db';
+import connectDB from './config/db.js';
 import { toNodeHandler } from 'better-auth/node';
-import { auth } from './config/auth';
-import itemRoutes from './routes/itemRoutes';
-import aiRoutes from './routes/aiRoutes';
-import bookingRoutes from './routes/bookingRoutes';
-import errorHandler from './middleware/errorHandler';
-import './models/User'; // Ensure User model is registered
+import { auth } from './config/auth.js';
+import itemRoutes from './routes/itemRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
+import bookingRoutes from './routes/bookingRoutes.js';
+import errorHandler from './middleware/errorHandler.js';
+import './models/User.js'; // Ensure User model is registered
 
 const app = express();
 const PORT = process.env.PORT || 5000;
