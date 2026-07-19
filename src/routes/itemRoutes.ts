@@ -6,7 +6,7 @@ import {
   deleteItem,
   getMyItems,
   addReview,
-} from '../controllers/itemController';
+} from '../controllers/itemController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { attachUser } from '../middleware/attachUser.js';
 
