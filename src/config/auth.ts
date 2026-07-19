@@ -21,6 +21,8 @@ export const auth = betterAuth({
     process.env.CLIENT_URL || 'http://localhost:3000',
     'http://localhost:3000',
     'http://localhost:5000',
+    // Production URLs — update these to match your actual Vercel deployment URLs
+    ...(process.env.TRUSTED_ORIGINS ? process.env.TRUSTED_ORIGINS.split(',').map(s => s.trim()) : []),
   ],
   // We need to define custom fields for the user table to store our specific fields
   user: {
