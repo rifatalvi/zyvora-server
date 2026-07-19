@@ -71,6 +71,7 @@ const UserSchema = new Schema<IUser>(
   },
   {
     timestamps: true,
+    collection: 'user',
   }
 );
 

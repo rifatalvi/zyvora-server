@@ -6,6 +6,7 @@ import { toNodeHandler } from 'better-auth/node';
 import { auth } from './config/auth';
 import itemRoutes from './routes/itemRoutes';
 import errorHandler from './middleware/errorHandler';
+import './models/User'; // Ensure User model is registered
 
 const app = express();
 const PORT = process.env.PORT || 5000;

@@ -16,6 +16,12 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  // Allow the frontend origin to make auth requests (fixes 403 CSRF error)
+  trustedOrigins: [
+    process.env.CLIENT_URL || 'http://localhost:3000',
+    'http://localhost:3000',
+    'http://localhost:5000',
+  ],
   // We need to define custom fields for the user table to store our specific fields
   user: {
     additionalFields: {
@@ -36,3 +42,4 @@ export const auth = betterAuth({
   },
   // Optional: Add session caching or other plugins if needed
 });
+

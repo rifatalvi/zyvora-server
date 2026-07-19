@@ -28,7 +28,7 @@ export const generateContent = async (req: AuthRequest, res: Response): Promise<
     `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.5-flash',
       contents: prompt,
     });
 
@@ -69,7 +69,7 @@ export const getRecommendations = async (req: AuthRequest, res: Response): Promi
     `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.5-flash',
       contents: prompt,
     });
 
@@ -97,5 +97,59 @@ export const getRecommendations = async (req: AuthRequest, res: Response): Promi
   } catch (error) {
     console.error('AI Recommendations error:', error);
     res.status(500).json({ success: false, message: 'Failed to get recommendations' });
+  }
+};
+
+// ── POST /api/ai/chat ──────────────────────────────────────────
+export const chatWithJarvis = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { message, image } = req.body;
+
+    if (!message && !image) {
+      res.status(400).json({ success: false, message: 'Message or image is required' });
+      return;
+    }
+
+    const systemPrompt = `
+You are Jarvis, an AI assistant for Zyvora. 
+Zyvora is an AI-Powered Learning Platform connecting ambitious learners with world-class courses and mentors.
+You can answer questions about the platform, courses, or help analyze images if the user provides one.
+Be helpful, concise, and friendly.
+`;
+
+    const contents: any[] = [{ text: systemPrompt }];
+
+    if (message) {
+      contents.push({ text: `User message: ${message}` });
+    }
+
+    if (image) {
+      const match = image.match(/^data:(image\/[a-zA-Z+.-]+);base64,(.+)$/);
+      if (match) {
+        contents.push({
+          inlineData: {
+            mimeType: match[1],
+            data: match[2],
+          },
+        });
+      } else {
+        console.warn('Invalid base64 image format received');
+      }
+    }
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.5-flash',
+      contents: contents,
+    });
+
+    const generatedText = response.text || 'I am sorry, I could not generate a response.';
+
+    res.status(200).json({
+      success: true,
+      data: generatedText,
+    });
+  } catch (error) {
+    console.error('Chat error:', error);
+    res.status(500).json({ success: false, message: 'Failed to chat with Jarvis' });
   }
 };
