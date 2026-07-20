@@ -6,13 +6,15 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const client = new MongoClient(process.env.MONGODB_URI as string);
-const db = client.db();
+// Use explicit db name to be safe; falls back to what's in the URI
+const db = client.db('zyvora');
 
 const isProd = process.env.VERCEL || process.env.NODE_ENV === 'production';
 
 export const auth = betterAuth({
   // Tells Better Auth its own public URL — critical for cookie settings and CSRF in production
-  baseURL: process.env.BETTER_AUTH_URL as string,
+  // Falls back to localhost if env var is not set (for local dev without env)
+  baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:5000',
 
   database: mongodbAdapter(db, {
     client,
@@ -21,9 +23,10 @@ export const auth = betterAuth({
     enabled: true,
   },
   trustedOrigins: [
-    process.env.CLIENT_URL as string,
+    'http://localhost:3000', // always allow local dev
+    process.env.CLIENT_URL,
     ...(process.env.TRUSTED_ORIGINS ? process.env.TRUSTED_ORIGINS.split(',').map(s => s.trim()) : []),
-  ],
+  ].filter(Boolean) as string[],
   user: {
     additionalFields: {
       role: {
