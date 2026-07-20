@@ -5,12 +5,12 @@ const router = Router();
 
 // Lazy auth guard: resolves `protect` at request-time to avoid module load-order issues
 const authGuard = async (req: Request, res: Response, next: NextFunction) => {
-  const { protect } = await import('../middleware/authMiddleware');
+  const { protect } = await import('../middleware/authMiddleware.js');
   return protect(req as any, res, next);
 };
 
 const providerGuard = async (req: Request, res: Response, next: NextFunction) => {
-  const { restrictTo } = await import('../middleware/authMiddleware');
+  const { restrictTo } = await import('../middleware/authMiddleware.js');
   return restrictTo('provider')(req as any, res, next);
 };
 

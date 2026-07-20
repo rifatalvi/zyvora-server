@@ -114,7 +114,7 @@ export const getProviderSales = async (req: AuthRequest, res: Response): Promise
     }
 
     // 1. Find all items owned by this provider
-    const Item = (await import('../models/Item')).default;
+    const Item = (await import('../models/Item.js')).default;
     const providerItems = await Item.find({ instructor: userId }).select('_id');
     const itemIds = providerItems.map(item => item._id);
 
@@ -125,7 +125,7 @@ export const getProviderSales = async (req: AuthRequest, res: Response): Promise
       .lean();
 
     // 3. Fetch buyer details
-    const User = (await import('../models/User')).default;
+    const User = (await import('../models/User.js')).default;
     const buyerIds = bookings.map(b => b.userId);
     const buyers = await User.find({ _id: { $in: buyerIds } }).select('_id name email avatar');
 
