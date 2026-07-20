@@ -14,7 +14,7 @@ const isProd = process.env.VERCEL || process.env.NODE_ENV === 'production';
 export const auth = betterAuth({
   // Tells Better Auth its own public URL — critical for cookie settings and CSRF in production
   // Falls back to localhost if env var is not set (for local dev without env)
-  baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:5000',
+  baseURL: process.env.BETTER_AUTH_URL as string,
 
   database: mongodbAdapter(db, {
     client,
@@ -23,8 +23,7 @@ export const auth = betterAuth({
     enabled: true,
   },
   trustedOrigins: [
-    'http://localhost:3000', // always allow local dev
-    process.env.CLIENT_URL,
+    process.env.CLIENT_URL as string,
     ...(process.env.TRUSTED_ORIGINS ? process.env.TRUSTED_ORIGINS.split(',').map(s => s.trim()) : []),
   ].filter(Boolean) as string[],
   user: {
