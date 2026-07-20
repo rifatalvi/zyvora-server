@@ -36,6 +36,8 @@ export const protect = async (
     };
     next();
   } catch (error) {
+    // Log actual error so it's visible in Vercel Function Logs
+    console.error('[protect] Session check failed:', error);
     res.status(401).json({ success: false, message: 'Invalid session' });
   }
 };

@@ -5,50 +5,65 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const client = new MongoClient(process.env.MONGODB_URI as string);
-// Use explicit db name to be safe; falls back to what's in the URI
+// Validate required env vars early so missing values give clear errors in Vercel logs
+if (!process.env.MONGODB_URI) {
+  throw new Error('[auth.ts] MONGODB_URI is not set. Add it in Vercel → Settings → Environment Variables.');
+}
+if (!process.env.BETTER_AUTH_SECRET) {
+  throw new Error('[auth.ts] BETTER_AUTH_SECRET is not set. Add it in Vercel → Settings → Environment Variables.');
+}
+
+const client = new MongoClient(process.env.MONGODB_URI);
 const db = client.db('zyvora');
 
-const isProd = process.env.VERCEL || process.env.NODE_ENV === 'production';
+const isProd = !!(process.env.VERCEL || process.env.NODE_ENV === 'production');
+
+// BETTER_AUTH_URL must be the public URL of THIS server (e.g. https://zyvora-server-xxx.vercel.app)
+// Without it Better Auth derives the URL from the request, which may work but cookies/redirects can break.
+const serverBaseURL = process.env.BETTER_AUTH_URL || (isProd ? undefined : 'http://localhost:5000');
+
+const allowedOrigins = [
+  isProd ? undefined : 'http://localhost:3000', // always allow local dev
+  process.env.CLIENT_URL,
+  ...(process.env.TRUSTED_ORIGINS ? process.env.TRUSTED_ORIGINS.split(',').map(s => s.trim()) : []),
+].filter(Boolean) as string[];
 
 export const auth = betterAuth({
-  // Tells Better Auth its own public URL — critical for cookie settings and CSRF in production
-  // Falls back to localhost if env var is not set (for local dev without env)
-  baseURL: process.env.BETTER_AUTH_URL as string,
+  ...(serverBaseURL ? { baseURL: serverBaseURL } : {}),
 
-  database: mongodbAdapter(db, {
-    client,
-  }),
+  secret: process.env.BETTER_AUTH_SECRET,
+
+  database: mongodbAdapter(db, { client }),
+
   emailAndPassword: {
     enabled: true,
   },
-  trustedOrigins: [
-    process.env.CLIENT_URL as string,
-    ...(process.env.TRUSTED_ORIGINS ? process.env.TRUSTED_ORIGINS.split(',').map(s => s.trim()) : []),
-  ].filter(Boolean) as string[],
+
+  trustedOrigins: allowedOrigins,
+
   user: {
     additionalFields: {
       role: {
-        type: "string",
+        type: 'string',
         required: true,
-        defaultValue: "learner"
+        defaultValue: 'learner',
       },
       avatar: {
-        type: "string",
+        type: 'string',
         required: false,
       },
       bio: {
-        type: "string",
+        type: 'string',
         required: false,
-      }
-    }
+      },
+    },
   },
+
   advanced: {
-    // Cross-origin: frontend and backend are on different Vercel domains
-    // so cookies must be SameSite=None + Secure to be sent by the browser
+    // Frontend and backend are on different Vercel domains → cross-origin cookies
+    // SameSite=None + Secure is required for the browser to send cookies cross-origin
     defaultCookieAttributes: isProd
       ? { sameSite: 'none', secure: true, httpOnly: true, path: '/' }
       : { sameSite: 'lax', secure: false, httpOnly: true, path: '/' },
   },
 });
-
