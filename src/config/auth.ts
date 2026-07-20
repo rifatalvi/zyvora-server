@@ -5,26 +5,25 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// We need a raw MongoClient for better-auth, even though we use Mongoose for other things.
 const client = new MongoClient(process.env.MONGODB_URI as string);
 const db = client.db();
 
+const isProd = process.env.VERCEL || process.env.NODE_ENV === 'production';
+
 export const auth = betterAuth({
+  // Tells Better Auth its own public URL — critical for cookie settings and CSRF in production
+  baseURL: process.env.BETTER_AUTH_URL as string,
+
   database: mongodbAdapter(db, {
-    client, // Providing the client enables database transactions (optional but recommended)
+    client,
   }),
   emailAndPassword: {
     enabled: true,
   },
-  // Allow the frontend origin to make auth requests (fixes 403 CSRF error)
   trustedOrigins: [
-    process.env.CLIENT_URL || 'http://localhost:3000',
-    'http://localhost:3000',
-    'http://localhost:5000',
-    // Production URLs — update these to match your actual Vercel deployment URLs
+    process.env.CLIENT_URL as string,
     ...(process.env.TRUSTED_ORIGINS ? process.env.TRUSTED_ORIGINS.split(',').map(s => s.trim()) : []),
   ],
-  // We need to define custom fields for the user table to store our specific fields
   user: {
     additionalFields: {
       role: {
@@ -42,6 +41,12 @@ export const auth = betterAuth({
       }
     }
   },
-  // Optional: Add session caching or other plugins if needed
+  advanced: {
+    // Cross-origin: frontend and backend are on different Vercel domains
+    // so cookies must be SameSite=None + Secure to be sent by the browser
+    defaultCookieAttributes: isProd
+      ? { sameSite: 'none', secure: true, httpOnly: true, path: '/' }
+      : { sameSite: 'lax', secure: false, httpOnly: true, path: '/' },
+  },
 });
 

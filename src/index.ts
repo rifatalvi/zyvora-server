@@ -17,8 +17,20 @@ const PORT = process.env.PORT || 5000;
 connectDB();
 
 // ── Middleware ─────────────────────────────────────────────────
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  ...(process.env.TRUSTED_ORIGINS ? process.env.TRUSTED_ORIGINS.split(',').map(s => s.trim()) : []),
+].filter(Boolean) as string[];
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (curl, server-to-server, same-origin)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
 
